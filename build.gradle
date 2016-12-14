@@ -1,0 +1,18 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.7'
+}
+
+group = 'se.walkercrou'
+version = '1.0.0'
+description = 'An NPC plugin.'
+
+sponge.plugin {
+    id = 'peeps'
+    meta {
+        name = "Peeps"
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:5.0.0'
+}
