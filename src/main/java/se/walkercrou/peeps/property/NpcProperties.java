@@ -5,6 +5,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.property.display.DisplayNameProperty;
+import se.walkercrou.peeps.property.display.NameTagVisibleProperty;
 import se.walkercrou.peeps.property.display.SkinProperty;
 import se.walkercrou.peeps.property.sight.BackSightRangeProperty;
 import se.walkercrou.peeps.property.sight.FrontSightRangeProperty;
@@ -27,6 +28,8 @@ public final class NpcProperties {
     public static final NpcProperty<Entity> RIDING = new RidingProperty();
 
     public static final NpcProperty<Vector3d> ROTATION = new RotationProperty();
+
+    public static final NpcProperty<Boolean> NAME_TAG_VISIBLE = new NameTagVisibleProperty();
 
     private NpcProperties() {}
 

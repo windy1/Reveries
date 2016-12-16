@@ -8,8 +8,14 @@ import static org.spongepowered.api.text.format.TextColors.GRAY;
 import static org.spongepowered.api.text.format.TextColors.GREEN;
 import static org.spongepowered.api.text.format.TextColors.RED;
 
+import com.google.common.collect.Maps;
+import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextElement;
 import org.spongepowered.api.text.TextTemplate;
+import se.walkercrou.peeps.data.mutable.NpcData;
+
+import java.util.Map;
 
 public final class Messages {
 
@@ -19,8 +25,10 @@ public final class Messages {
 
     public static final Text SPAWN_FAILED = Text.of(RED, "Could not spawn NPC here.");
 
-    public static final TextTemplate SPAWN_SUCCESS = of(
-        Text.of(GREEN, "Spawned a new NPC!"),                               NEW_LINE, BLUE,
+    public static final Text SPAWN_SUCCESS = Text.of(GREEN, "Spawned a new NPC!");
+
+    public static final TextTemplate NPC_INFO = of(
+        BLUE,
         "Owner            ",    arg("npc.owner").color(GRAY),           NEW_LINE,
         "Entity Type      ",    arg("npc.entity.type").color(GRAY),     NEW_LINE,
         "Unique ID        ",    arg("npc.entity.uuid").color(GRAY),     NEW_LINE,
@@ -48,6 +56,20 @@ public final class Messages {
 
     public static final Text UNSUPPORTED_PROP_TYPE = Text.of(RED, "Invalid property value type.");
 
+    public static final Text MISSING_ENTITY = Text.of(
+        RED, "You must enter an NPC ID when performing this from the command line.");
+
+    public static final Text NO_ENTITY_TARGET = Text.of(RED, "No entity target found.");
+
     private Messages() {}
+
+    public static Text getNpcInfo(Living npc, NpcData npcData) {
+        Map<String, TextElement> info = Maps.newHashMap();
+        info.put("npc.owner", Text.of(npcData.ownerId().get()));
+        info.put("npc.entity.type", Text.of(npc.getType().getId()));
+        info.put("npc.entity.uuid", Text.of(npc.getUniqueId()));
+        info.put("npc.displayName", npcData.displayName().get());
+        return NPC_INFO.apply(info).build();
+    }
 
 }

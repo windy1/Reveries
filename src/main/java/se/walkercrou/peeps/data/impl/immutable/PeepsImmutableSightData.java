@@ -1,12 +1,13 @@
-package se.walkercrou.peeps.data.impl.sight;
+package se.walkercrou.peeps.data.impl.immutable;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
-import se.walkercrou.peeps.data.sight.ImmutableSightData;
+import se.walkercrou.peeps.data.immutable.ImmutableSightData;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.impl.mutable.PeepsSightData;
+import se.walkercrou.peeps.data.mutable.SightData;
 
 public final class PeepsImmutableSightData extends AbstractImmutableData<ImmutableSightData, SightData> implements ImmutableSightData {
 

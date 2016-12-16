@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl.sight;
+package se.walkercrou.peeps.data.impl.mutable;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
@@ -6,13 +6,14 @@ import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractData;
 import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.value.mutable.Value;
-import se.walkercrou.peeps.data.sight.ImmutableSightData;
+import se.walkercrou.peeps.data.immutable.ImmutableSightData;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.impl.immutable.PeepsImmutableSightData;
+import se.walkercrou.peeps.data.mutable.SightData;
 
 import java.util.Optional;
 
-public class PeepsSightData extends AbstractData<SightData, ImmutableSightData> implements SightData {
+public final class PeepsSightData extends AbstractData<SightData, ImmutableSightData> implements SightData {
 
     private double frontSightRange;
     private double backSightRange;

@@ -10,6 +10,8 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataManager;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.event.EventManager;
@@ -22,17 +24,18 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.cmd.CommandRegistrar;
-import se.walkercrou.peeps.data.base.ImmutableNpcData;
-import se.walkercrou.peeps.data.base.NpcData;
-import se.walkercrou.peeps.data.impl.base.NpcDataManipulatorBuilder;
-import se.walkercrou.peeps.data.impl.base.PeepsNpcData;
-import se.walkercrou.peeps.data.impl.sight.SightdataManipulatorBuilder;
-import se.walkercrou.peeps.data.sight.ImmutableSightData;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
+import se.walkercrou.peeps.data.immutable.ImmutableSightData;
+import se.walkercrou.peeps.data.impl.builder.NpcDataManipulatorBuilder;
+import se.walkercrou.peeps.data.impl.builder.SightDataManipulatorBuilder;
+import se.walkercrou.peeps.data.impl.mutable.PeepsNpcData;
+import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.mutable.SightData;
 import se.walkercrou.peeps.event.EntityListener;
 import se.walkercrou.peeps.event.NpcListener;
 import se.walkercrou.peeps.property.NpcProperty;
@@ -67,7 +70,7 @@ public final class Peeps {
         INSTANCE = this;
         DataManager data = this.game.getDataManager();
         data.register(NpcData.class, ImmutableNpcData.class, new NpcDataManipulatorBuilder());
-        data.register(SightData.class, ImmutableSightData.class, new SightdataManipulatorBuilder());
+        data.register(SightData.class, ImmutableSightData.class, new SightDataManipulatorBuilder());
     }
 
     @Listener
@@ -123,13 +126,10 @@ public final class Peeps {
         if (!world.spawnEntity(entity, cause) || !Living.class.isAssignableFrom(entityType.getEntityClass()))
             throw new NpcSpawnException("could not spawn NPC");
 
-        entity.offer(new PeepsNpcData(owner.get().getUniqueId(), null, Sets.newHashSet()));
-
-        Sponge.getScheduler().createTaskBuilder()
-            .delayTicks(1)
-            .intervalTicks(1)
-            .execute(new NpcMonitor(this, entity))
-            .submit(this);
+        Text displayName = Messages.DEFAULT_DISPLAY_NAME;
+        entity.offer(new PeepsNpcData(owner.get().getUniqueId(), displayName, Sets.newHashSet()));
+        if (entity.supports(DisplayNameData.class))
+            entity.offer(entity.getOrCreate(DisplayNameData.class).get().set(Keys.DISPLAY_NAME, displayName));
 
         return entity;
     }

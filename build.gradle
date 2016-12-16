@@ -14,5 +14,5 @@ sponge.plugin {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:5.0.0'
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
 }

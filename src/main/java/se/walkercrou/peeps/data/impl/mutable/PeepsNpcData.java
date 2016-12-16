@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl.base;
+package se.walkercrou.peeps.data.impl.mutable;
 
 import com.google.common.collect.Sets;
 import org.spongepowered.api.Sponge;
@@ -6,12 +6,12 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractData;
 import org.spongepowered.api.data.merge.MergeFunction;
-import org.spongepowered.api.data.value.mutable.OptionalValue;
 import org.spongepowered.api.data.value.mutable.SetValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.base.ImmutableNpcData;
-import se.walkercrou.peeps.data.base.NpcData;
+import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
+import se.walkercrou.peeps.data.impl.immutable.PeepsImmutableNpcData;
+import se.walkercrou.peeps.data.mutable.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
 import se.walkercrou.peeps.trait.NpcTrait;
 
@@ -44,8 +44,8 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
     }
 
     @Override
-    public OptionalValue<Text> displayName() {
-        return Sponge.getRegistry().getValueFactory().createOptionalValue(NpcKeys.DISPLAY_NAME, this.displayName);
+    public Value<Text> displayName() {
+        return Sponge.getRegistry().getValueFactory().createValue(NpcKeys.DISPLAY_NAME, this.displayName);
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
         registerKeyValue(NpcKeys.OWNER_ID, this::ownerId);
 
         registerFieldGetter(NpcKeys.DISPLAY_NAME, () -> Optional.ofNullable(this.displayName));
-        registerFieldSetter(NpcKeys.DISPLAY_NAME, value -> this.displayName = value.orElse(null));
+        registerFieldSetter(NpcKeys.DISPLAY_NAME, value -> this.displayName = value);
         registerKeyValue(NpcKeys.DISPLAY_NAME, this::displayName);
 
         registerFieldGetter(NpcKeys.TRAITS, () -> this.traits);
@@ -102,7 +102,7 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
     public DataContainer toContainer() {
         return super.toContainer()
             .set(NpcKeys.OWNER_ID, this.ownerId)
-            .set(NpcKeys.DISPLAY_NAME, Optional.ofNullable(this.displayName))
+            .set(NpcKeys.DISPLAY_NAME, this.displayName)
             .set(NpcKeys.TRAITS, this.traits);
     }
 

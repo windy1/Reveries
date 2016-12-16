@@ -4,8 +4,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.Living;
 import se.walkercrou.peeps.Peeps;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.impl.sight.PeepsSightData;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.impl.mutable.PeepsSightData;
+import se.walkercrou.peeps.data.mutable.SightData;
 import se.walkercrou.peeps.property.NpcProperty;
 import se.walkercrou.peeps.property.PropertyException;
 

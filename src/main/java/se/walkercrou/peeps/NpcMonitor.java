@@ -4,6 +4,8 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.property.AbstractProperty;
+import org.spongepowered.api.data.property.entity.EyeLocationProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
@@ -13,9 +15,12 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.MutableBlockVolume;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.mutable.SightData;
 import se.walkercrou.peeps.event.npc.NpcLoseSightOfPlayerEvent;
 import se.walkercrou.peeps.event.npc.NpcSpotPlayerEvent;
+import se.walkercrou.peeps.trait.NpcTrait;
+import se.walkercrou.peeps.trait.NpcTraits;
 
 import java.util.Optional;
 import java.util.Set;
@@ -64,13 +69,15 @@ public final class NpcMonitor implements Consumer<Task> {
                 return e instanceof Player && (frontFov.containsBlock(position) || backFov.containsBlock(position));
             }).stream().map(e -> (Player) e).collect(Collectors.toSet());
 
-            Set<Player> visibleResult = Sets.newHashSet();
+            Set<Player> toAdd = Sets.newHashSet();
+            Set<Player> toRemove = Sets.newHashSet();
+
             for (Player player : visiblePlayers) {
                 if (!this.previouslyVisible.contains(player)) {
                     boolean cancelled = this.plugin.game.getEventManager().post(new NpcSpotPlayerEvent(
                         this.npc, Cause.source(this.plugin.self).owner(player).build()));
                     if (!cancelled)
-                        visibleResult.add(player);
+                        toAdd.add(player);
                 }
             }
 
@@ -78,18 +85,27 @@ public final class NpcMonitor implements Consumer<Task> {
                 if (!visiblePlayers.contains(player)) {
                     boolean cancelled = this.plugin.game.getEventManager().post(new NpcLoseSightOfPlayerEvent(
                         this.npc, Cause.source(this.plugin.self).owner(player).build()));
-                    if (cancelled)
-                        visibleResult.add(player);
+                    if (!cancelled)
+                        toRemove.add(player);
                 }
             }
 
-            this.previouslyVisible.clear();
-            this.previouslyVisible.addAll(visibleResult);
+            this.previouslyVisible.addAll(toAdd);
+            this.previouslyVisible.removeAll(toRemove);
+
+            Set<NpcTrait> traits = this.npc.get(NpcData.class).get().traits().get();
+            if (traits.contains(NpcTraits.HEAD_TRACKING)) {
+                if (this.tracking == null)
+                    this.tracking = this.previouslyVisible.stream().findAny().orElse(null);
+                if (this.tracking != null) {
+                    this.npc.lookAt(this.tracking.getProperty(EyeLocationProperty.class)
+                        .map(AbstractProperty::getValue).orElse(this.tracking.getLocation().getPosition()));
+                }
+            }
         }
     }
 
     private MutableBlockVolume getFieldOfView(Direction direction, double range) {
-        System.out.println("FOV <" + direction + "> : " + range);
         Location<World> location = this.npc.getLocation();
         Vector3i position = location.getBlockPosition();
         Vector3i directionOffset = direction.asBlockOffset();

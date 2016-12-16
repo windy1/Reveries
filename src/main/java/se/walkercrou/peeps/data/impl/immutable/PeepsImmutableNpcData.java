@@ -1,15 +1,15 @@
-package se.walkercrou.peeps.data.impl.base;
+package se.walkercrou.peeps.data.impl.immutable;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
-import org.spongepowered.api.data.value.immutable.ImmutableOptionalValue;
 import org.spongepowered.api.data.value.immutable.ImmutableSetValue;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.base.ImmutableNpcData;
-import se.walkercrou.peeps.data.base.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
+import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
+import se.walkercrou.peeps.data.impl.mutable.PeepsNpcData;
+import se.walkercrou.peeps.data.mutable.NpcData;
 import se.walkercrou.peeps.trait.NpcTrait;
 
 import java.util.Optional;
@@ -35,9 +35,8 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
     }
 
     @Override
-    public ImmutableOptionalValue<Text> displayName() {
-        return (ImmutableOptionalValue<Text>) Sponge.getRegistry().getValueFactory()
-            .createOptionalValue(NpcKeys.DISPLAY_NAME, this.displayName).asImmutable();
+    public ImmutableValue<Text> displayName() {
+        return Sponge.getRegistry().getValueFactory().createValue(NpcKeys.DISPLAY_NAME, this.displayName).asImmutable();
     }
 
     @Override
@@ -71,7 +70,7 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
     public DataContainer toContainer() {
         return super.toContainer()
             .set(NpcKeys.OWNER_ID, this.ownerId)
-            .set(NpcKeys.DISPLAY_NAME, Optional.of(this.displayName))
+            .set(NpcKeys.DISPLAY_NAME, this.displayName)
             .set(NpcKeys.TRAITS, this.traits);
     }
 

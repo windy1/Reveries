@@ -1,16 +1,17 @@
-package se.walkercrou.peeps.data.impl.sight;
+package se.walkercrou.peeps.data.impl.builder;
 
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
-import se.walkercrou.peeps.data.sight.ImmutableSightData;
+import se.walkercrou.peeps.data.immutable.ImmutableSightData;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.sight.SightData;
+import se.walkercrou.peeps.data.impl.mutable.PeepsSightData;
+import se.walkercrou.peeps.data.mutable.SightData;
 
 import java.util.Optional;
 
-public class SightdataManipulatorBuilder implements DataManipulatorBuilder<SightData, ImmutableSightData> {
+public class SightDataManipulatorBuilder implements DataManipulatorBuilder<SightData, ImmutableSightData> {
 
     @Override
     public SightData create() {

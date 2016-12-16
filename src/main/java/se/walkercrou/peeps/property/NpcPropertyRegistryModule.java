@@ -39,6 +39,7 @@ public final class NpcPropertyRegistryModule implements CatalogRegistryModule<Np
         this.propertyMappings.put("location", LOCATION);
         this.propertyMappings.put("riding", RIDING);
         this.propertyMappings.put("rotation", ROTATION);
+        this.propertyMappings.put("nameTag", NAME_TAG_VISIBLE);
     }
 
 }

@@ -40,6 +40,11 @@ public final class CommandRegistrar {
                 optional(remainingJoinedStrings(Text.of("displayName"))))
             .build();
 
+        CommandSpec getInfo = CommandSpec.builder()
+            .executor(executors::getNpcInfo)
+            .arguments(optional(onlyOne(entity(Text.of("npc")))))
+            .build();
+
         CommandFlags.Builder traitFlags = flags();
         for (NpcTrait trait : this.plugin.game.getRegistry().getAllOf(NpcTrait.class))
             traitFlags.valueFlag(bool(Text.of(trait.getId())), "-" + trait.getId());
@@ -59,12 +64,14 @@ public final class CommandRegistrar {
                 .valueFlag(entity(Text.of("riding")), "-riding")
                 .valueFlag(doubleNum(Text.of("sightFront")), "-sightFront")
                 .valueFlag(doubleNum(Text.of("sightBack")), "-sightBack")
+                .valueFlag(bool(Text.of("nameTag")), "-nameTag")
                 .buildWith(onlyOne(entity(Text.of("npc")))))
             .build();
 
         CommandSpec root = CommandSpec.builder()
             .executor(executors::showVersion)
             .child(create, "create", "new", "mk", "spawn")
+            .child(getInfo, "getinfo", "info", "information", "data")
             .child(trait, "trait")
             .child(prop, "property", "prop")
             .build();
