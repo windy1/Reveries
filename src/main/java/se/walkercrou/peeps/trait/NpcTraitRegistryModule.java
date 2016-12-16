@@ -16,7 +16,8 @@ public final class NpcTraitRegistryModule implements CatalogRegistryModule<NpcTr
         "invuln", NpcTraits.INVULNERABLE,
         "immobile", NpcTraits.IMMOBILE,
         "nocollide", NpcTraits.NO_COLLIDE,
-        "nofire", NpcTraits.NO_FIRE);
+        "nofire", NpcTraits.NO_FIRE,
+        "headtracking", NpcTraits.HEAD_TRACKING);
 
     @Override
     public Optional<NpcTrait> getById(String id) {

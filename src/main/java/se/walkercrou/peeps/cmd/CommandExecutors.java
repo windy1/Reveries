@@ -1,19 +1,17 @@
 package se.walkercrou.peeps.cmd;
 
 import static se.walkercrou.peeps.Messages.DEFAULT_DISPLAY_NAME;
-import static se.walkercrou.peeps.Messages.IMMUTABLE_SKIN;
 import static se.walkercrou.peeps.Messages.NONE;
 import static se.walkercrou.peeps.Messages.NOT_AN_NPC;
 import static se.walkercrou.peeps.Messages.NO_LOCATION;
-import static se.walkercrou.peeps.Messages.SKIN_LOOKUP;
 import static se.walkercrou.peeps.Messages.SKIN_NOT_FOUND;
 import static se.walkercrou.peeps.Messages.SPAWN_FAILED;
 import static se.walkercrou.peeps.Messages.SPAWN_SUCCESS;
+import static se.walkercrou.peeps.Messages.UNSUPPORTED_PROP_TYPE;
 import static se.walkercrou.peeps.Messages.UPDATED_PROPS;
 import static se.walkercrou.peeps.Messages.UPDATED_TRAITS;
 import static se.walkercrou.peeps.Messages.VERSION;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.command.CommandException;
@@ -37,14 +35,15 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.NpcSpawnException;
 import se.walkercrou.peeps.Peeps;
-import se.walkercrou.peeps.data.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
+import se.walkercrou.peeps.data.base.NpcData;
+import se.walkercrou.peeps.property.NpcProperty;
+import se.walkercrou.peeps.property.PropertyException;
 import se.walkercrou.peeps.trait.NpcTrait;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 public final class CommandExecutors {
 
@@ -69,7 +68,6 @@ public final class CommandExecutors {
             throw new CommandException(NO_LOCATION);
         Location<World> location = loc.orElse(((Player) src).getLocation());
         Text displayName = context.<String>getOne("displayName").map(this::parseText).orElse(DEFAULT_DISPLAY_NAME);
-
         try {
             Living npc = this.plugin.createAndSpawn(entityType, location, Cause.source(this.plugin).owner(src).build());
             NpcData npcData = npc.get(NpcData.class).get();
@@ -110,53 +108,30 @@ public final class CommandExecutors {
         return CommandResult.success();
     }
 
+    @SuppressWarnings("unchecked")
     public CommandResult updateProperties(CommandSource src, CommandContext context) throws CommandException {
-        Entity npc = context.<Entity>getOne("npc").get();
-        NpcData npcData = npc.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
+        Entity entity = context.<Entity>getOne("npc").get();
+        NpcData npcData = entity.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
         int updates = 0;
-
-        if (!(npc instanceof Living))
+        if (!(entity instanceof Living))
             throw new CommandException(NOT_AN_NPC);
+        Living npc = (Living) entity;
 
-        if (context.hasAny("skin")) {
-            String skinIdOrPlayerName = context.<String>getOne("skin").get();
-            if (!npc.supports(SkinData.class))
-                throw new CommandException(IMMUTABLE_SKIN);
-            try {
-                UUID skinId = UUID.fromString(skinIdOrPlayerName);
-                npc.offer(npc.getOrCreate(SkinData.class).get().set(Keys.SKIN_UNIQUE_ID, skinId));
-                updates++;
-            } catch (IllegalArgumentException e) {
-                src.sendMessage(SKIN_LOOKUP);
-                setNpcSkinByPlayerName(src, npc, skinIdOrPlayerName);
+        for (NpcProperty prop : this.plugin.game.getRegistry().getAllOf(NpcProperty.class)) {
+            String propId = prop.getId();
+            System.out.println("checking " + propId);
+            if (context.hasAny(propId)) {
+                System.out.println("propId = " + propId);
+                Object value = context.getOne(propId).get();
+                if (!prop.supports(value))
+                    throw new CommandException(UNSUPPORTED_PROP_TYPE);
+                try {
+                    if (prop.set(npc, value, src))
+                        updates++;
+                } catch (PropertyException e) {
+                    throw new CommandException(e.getText());
+                }
             }
-        }
-
-        if (context.hasAny("displayName")) {
-            Text displayName = parseText(context.<String>getOne("displayName").get());
-            npc.offer(npcData.set(NpcKeys.DISPLAY_NAME, Optional.of(displayName)));
-            if (npc.supports(DisplayNameData.class))
-                npc.offer(npc.getOrCreate(DisplayNameData.class).get().set(Keys.DISPLAY_NAME, displayName));
-            updates++;
-        }
-
-        if (context.hasAny("rotation")) {
-            Vector3d rotation = context.<Vector3d>getOne("rotation").get();
-            npc.setRotation(rotation);
-            ((Living) npc).setHeadRotation(rotation);
-            updates++;
-        }
-
-        if (context.hasAny("location")) {
-            Location<World> location = context.<Location<World>>getOne("location").get();
-            npc.setLocation(location);
-            updates++;
-        }
-
-        if (context.hasAny("riding")) {
-            Entity riding = context.<Entity>getOne("riding").get();
-            npc.setVehicle(riding);
-            updates++;
         }
 
         src.sendMessage(UPDATED_PROPS, ImmutableMap.of("amount", Text.of(updates)));

@@ -2,6 +2,7 @@ package se.walkercrou.peeps.cmd;
 
 import static org.spongepowered.api.command.args.GenericArguments.bool;
 import static org.spongepowered.api.command.args.GenericArguments.catalogedElement;
+import static org.spongepowered.api.command.args.GenericArguments.doubleNum;
 import static org.spongepowered.api.command.args.GenericArguments.entity;
 import static org.spongepowered.api.command.args.GenericArguments.flags;
 import static org.spongepowered.api.command.args.GenericArguments.location;
@@ -56,6 +57,8 @@ public final class CommandRegistrar {
                 .valueFlag(vector3d(Text.of("rotation")), "-rotation")
                 .valueFlag(location(Text.of("location")), "-location")
                 .valueFlag(entity(Text.of("riding")), "-riding")
+                .valueFlag(doubleNum(Text.of("sightFront")), "-sightFront")
+                .valueFlag(doubleNum(Text.of("sightBack")), "-sightBack")
                 .buildWith(onlyOne(entity(Text.of("npc")))))
             .build();
 

@@ -46,6 +46,8 @@ public final class Messages {
 
     public static final Text NO_AI = Text.of(RED, "This NPC cannot have AI.");
 
+    public static final Text UNSUPPORTED_PROP_TYPE = Text.of(RED, "Invalid property value type.");
+
     private Messages() {}
 
 }

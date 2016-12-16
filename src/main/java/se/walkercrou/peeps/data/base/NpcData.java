@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data;
+package se.walkercrou.peeps.data.base;
 
 import org.spongepowered.api.data.manipulator.DataManipulator;
 import org.spongepowered.api.data.value.mutable.OptionalValue;

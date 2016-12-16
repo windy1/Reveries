@@ -1,4 +1,4 @@
-package se.walkercrou.peeps;
+package se.walkercrou.peeps.event;
 
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.Cancellable;
@@ -8,7 +8,7 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
-import se.walkercrou.peeps.data.NpcData;
+import se.walkercrou.peeps.data.base.NpcData;
 import se.walkercrou.peeps.trait.NpcTrait;
 import se.walkercrou.peeps.trait.NpcTraits;
 

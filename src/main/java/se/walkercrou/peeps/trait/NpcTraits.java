@@ -10,6 +10,8 @@ public final class NpcTraits {
 
     public static final NpcTrait NO_FIRE = new SimpleNpcTrait("nofire");
 
+    public static final NpcTrait HEAD_TRACKING = new SimpleNpcTrait("headtracking");
+
     private NpcTraits() {}
 
 }

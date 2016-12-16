@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl;
+package se.walkercrou.peeps.data.impl.base;
 
 import com.google.common.collect.Sets;
 import org.spongepowered.api.Sponge;
@@ -10,8 +10,8 @@ import org.spongepowered.api.data.value.mutable.OptionalValue;
 import org.spongepowered.api.data.value.mutable.SetValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.ImmutableNpcData;
-import se.walkercrou.peeps.data.NpcData;
+import se.walkercrou.peeps.data.base.ImmutableNpcData;
+import se.walkercrou.peeps.data.base.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
 import se.walkercrou.peeps.trait.NpcTrait;
 
@@ -90,7 +90,7 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
 
     @Override
     public PeepsImmutableNpcData asImmutable() {
-        return null;
+        return new PeepsImmutableNpcData(this.ownerId, this.displayName, this.traits);
     }
 
     @Override

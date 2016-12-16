@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl;
+package se.walkercrou.peeps.data.impl.base;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -8,8 +8,8 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.ImmutableNpcData;
-import se.walkercrou.peeps.data.NpcData;
+import se.walkercrou.peeps.data.base.ImmutableNpcData;
+import se.walkercrou.peeps.data.base.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
 import se.walkercrou.peeps.trait.NpcTrait;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class NpcDataManipulatorBuilder implements DataManipulatorBuilder<NpcData, ImmutableNpcData> {
+public final class NpcDataManipulatorBuilder implements DataManipulatorBuilder<NpcData, ImmutableNpcData> {
 
     @Override
     public NpcData create() {
