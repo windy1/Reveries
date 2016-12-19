@@ -73,30 +73,14 @@ public final class CommandExecutors {
     }
 
     public CommandResult getNpcInfo(CommandSource src, CommandContext context) throws CommandException {
-        Optional<Entity> entity = context.getOne("npc");
-        Entity npc;
-        if (!entity.isPresent()) {
-            if (!(src instanceof Player))
-                throw new CommandException(MISSING_ENTITY);
-            Player player = (Player) src;
-            npc = player.getWorld().getIntersectingEntities(player, 10).stream().findAny()
-                .map(EntityUniverse.EntityHit::getEntity).orElse(null);
-        } else
-            npc = entity.get();
-
-        if (npc == null)
-            throw new CommandException(NO_ENTITY_TARGET);
-        if (!(npc instanceof Living))
-            throw new CommandException(NOT_AN_NPC);
-
+        Living npc = getTargetedNpc(src, context.getOne("npc"));
         NpcData data = npc.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
-        src.sendMessage(Messages.getNpcInfo((Living) npc, data));
-
+        src.sendMessage(Messages.getNpcInfo(npc, data));
         return CommandResult.success();
     }
 
     public CommandResult updateTraits(CommandSource src, CommandContext context) throws CommandException {
-        Entity npc = context.<Entity>getOne("npc").get();
+        Living npc = getTargetedNpc(src, context.getOne("npc"));
         NpcData npcData = npc.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
         Set<NpcTrait> npcTraits = npcData.traits().get();
         int updates = 0;
@@ -117,12 +101,9 @@ public final class CommandExecutors {
 
     @SuppressWarnings("unchecked")
     public CommandResult updateProperties(CommandSource src, CommandContext context) throws CommandException {
-        Entity entity = context.<Entity>getOne("npc").get();
-        NpcData npcData = entity.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
+        Living npc = getTargetedNpc(src, context.getOne("npc"));
+        NpcData npcData = npc.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
         int updates = 0;
-        if (!(entity instanceof Living))
-            throw new CommandException(NOT_AN_NPC);
-        Living npc = (Living) entity;
         for (NpcProperty prop : this.plugin.game.getRegistry().getAllOf(NpcProperty.class)) {
             String propId = prop.getId();
             if (context.hasAny(propId)) {
@@ -139,6 +120,26 @@ public final class CommandExecutors {
         }
         src.sendMessage(UPDATED_PROPS, ImmutableMap.of("amount", Text.of(updates)));
         return CommandResult.success();
+    }
+
+    private Living getTargetedNpc(CommandSource src, Optional<Entity> arg) throws CommandException {
+        Entity npc;
+        if (!arg.isPresent()) {
+            if (!(src instanceof Player))
+                throw new CommandException(MISSING_ENTITY);
+            Player player = (Player) src;
+            npc = player.getWorld().getIntersectingEntities(player, 10).stream()
+                .filter(e -> !e.getEntity().equals(player)).findFirst()
+                .map(EntityUniverse.EntityHit::getEntity).orElse(null);
+        } else
+            npc = arg.get();
+
+        if (npc == null)
+            throw new CommandException(NO_ENTITY_TARGET);
+        if (!(npc instanceof Living))
+            throw new CommandException(NOT_AN_NPC);
+
+        return (Living) npc;
     }
 
 }

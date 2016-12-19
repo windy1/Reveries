@@ -35,8 +35,9 @@ public final class NpcDataManipulatorBuilder implements DataManipulatorBuilder<N
         if (!container.contains(NpcKeys.OWNER_ID, Keys.DISPLAY_NAME, NpcKeys.TRAITS))
             return Optional.empty();
         UUID ownerId = container.getObject(NpcKeys.OWNER_ID.getQuery(), UUID.class).get();
-        Text displayName = container.getObject(Keys.DISPLAY_NAME.getQuery(), Text.class).get();
-        Set<NpcTrait> traits = newHashSet(container.getObjectList(NpcKeys.TRAITS.getQuery(), NpcTrait.class).get());
+        Text displayName = container.getSerializable(NpcKeys.DISPLAY_NAME.getQuery(), Text.class).get();
+        Set<NpcTrait> traits = newHashSet(
+            container.getCatalogTypeList(NpcKeys.TRAITS.getQuery(), NpcTrait.class).get());
         return Optional.of(new PeepsNpcData(ownerId, displayName, traits));
     }
 

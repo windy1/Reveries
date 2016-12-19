@@ -31,18 +31,14 @@ public final class NpcMonitor implements Consumer<Task> {
 
     private final Peeps plugin;
     private final Living npc;
-    private final Set<Player> previouslyVisible = Sets.newHashSet();
-    private Living tracking;
+    private final Set<Player> visible = Sets.newHashSet();
+    private Player tracking;
 
     boolean preview = false;
 
     public NpcMonitor(Peeps plugin, Living npc) {
         this.plugin = plugin;
         this.npc = npc;
-    }
-
-    public void setTracking(Living tracking) {
-        this.tracking = tracking;
     }
 
     @Override
@@ -73,7 +69,7 @@ public final class NpcMonitor implements Consumer<Task> {
             Set<Player> toRemove = Sets.newHashSet();
 
             for (Player player : visiblePlayers) {
-                if (!this.previouslyVisible.contains(player)) {
+                if (!this.visible.contains(player)) {
                     boolean cancelled = this.plugin.game.getEventManager().post(new NpcSpotPlayerEvent(
                         this.npc, Cause.source(this.plugin.self).owner(player).build()));
                     if (!cancelled)
@@ -81,7 +77,7 @@ public final class NpcMonitor implements Consumer<Task> {
                 }
             }
 
-            for (Player player : this.previouslyVisible) {
+            for (Player player : this.visible) {
                 if (!visiblePlayers.contains(player)) {
                     boolean cancelled = this.plugin.game.getEventManager().post(new NpcLoseSightOfPlayerEvent(
                         this.npc, Cause.source(this.plugin.self).owner(player).build()));
@@ -90,13 +86,17 @@ public final class NpcMonitor implements Consumer<Task> {
                 }
             }
 
-            this.previouslyVisible.addAll(toAdd);
-            this.previouslyVisible.removeAll(toRemove);
+            this.visible.addAll(toAdd);
+            this.visible.removeAll(toRemove);
 
             Set<NpcTrait> traits = this.npc.get(NpcData.class).get().traits().get();
             if (traits.contains(NpcTraits.HEAD_TRACKING)) {
+                System.out.println(this.visible);
                 if (this.tracking == null)
-                    this.tracking = this.previouslyVisible.stream().findAny().orElse(null);
+                    this.tracking = this.visible.stream().findAny().orElse(null);
+                else if (!this.visible.contains(this.tracking))
+                    this.tracking = null;
+
                 if (this.tracking != null) {
                     this.npc.lookAt(this.tracking.getProperty(EyeLocationProperty.class)
                         .map(AbstractProperty::getValue).orElse(this.tracking.getLocation().getPosition()));

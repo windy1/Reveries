@@ -12,6 +12,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.event.EventManager;
@@ -34,8 +35,8 @@ import se.walkercrou.peeps.data.immutable.ImmutableSightData;
 import se.walkercrou.peeps.data.impl.builder.NpcDataManipulatorBuilder;
 import se.walkercrou.peeps.data.impl.builder.SightDataManipulatorBuilder;
 import se.walkercrou.peeps.data.impl.mutable.PeepsNpcData;
+import se.walkercrou.peeps.data.impl.mutable.PeepsSightData;
 import se.walkercrou.peeps.data.mutable.NpcData;
-import se.walkercrou.peeps.data.mutable.SightData;
 import se.walkercrou.peeps.event.EntityListener;
 import se.walkercrou.peeps.event.NpcListener;
 import se.walkercrou.peeps.property.NpcProperty;
@@ -68,21 +69,27 @@ public final class Peeps {
     public void onPreInit(GamePreInitializationEvent event) {
         this.log.info("Initializing...");
         INSTANCE = this;
+
+        GameRegistry reg = this.game.getRegistry();
+        reg.registerModule(NpcTrait.class, new NpcTraitRegistryModule());
+        reg.registerModule(NpcProperty.class, new NpcPropertyRegistryModule());
+
         DataManager data = this.game.getDataManager();
-        data.register(NpcData.class, ImmutableNpcData.class, new NpcDataManipulatorBuilder());
-        data.register(SightData.class, ImmutableSightData.class, new SightDataManipulatorBuilder());
+        data.register(PeepsNpcData.class, ImmutableNpcData.class, new NpcDataManipulatorBuilder());
+        data.register(PeepsSightData.class, ImmutableSightData.class, new SightDataManipulatorBuilder());
     }
 
     @Listener
     public void onStart(GameStartedServerEvent event) {
         this.log.info("Starting...");
 
-        GameRegistry reg = this.game.getRegistry();
-        reg.registerModule(NpcTrait.class, new NpcTraitRegistryModule());
-        reg.registerModule(NpcProperty.class, new NpcPropertyRegistryModule());
-
-        System.out.println("properties");
-        reg.getAllOf(NpcProperty.class).forEach(p -> this.log.info(p.getId()));
+        for (World world : this.game.getServer().getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                Optional<NpcData> npcData = entity.get(NpcData.class);
+                if (npcData.isPresent())
+                    System.out.println("NPC : " + npcData);
+            }
+        }
 
         if (init())
             this.log.info("Started.");

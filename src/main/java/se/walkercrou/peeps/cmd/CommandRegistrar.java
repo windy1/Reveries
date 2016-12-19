@@ -51,7 +51,7 @@ public final class CommandRegistrar {
 
         CommandSpec trait = CommandSpec.builder()
             .executor(executors::updateTraits)
-            .arguments(traitFlags.buildWith(onlyOne(entity(Text.of("npc")))))
+            .arguments(traitFlags.buildWith(optional(onlyOne(entity(Text.of("npc"))))))
             .build();
 
         CommandSpec prop = CommandSpec.builder()
@@ -65,7 +65,7 @@ public final class CommandRegistrar {
                 .valueFlag(doubleNum(Text.of("sightFront")), "-sightFront")
                 .valueFlag(doubleNum(Text.of("sightBack")), "-sightBack")
                 .valueFlag(bool(Text.of("nameTag")), "-nameTag")
-                .buildWith(onlyOne(entity(Text.of("npc")))))
+                .buildWith(optional(onlyOne(entity(Text.of("npc"))))))
             .build();
 
         CommandSpec root = CommandSpec.builder()
