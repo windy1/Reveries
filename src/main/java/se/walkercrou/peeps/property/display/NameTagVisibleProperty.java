@@ -26,6 +26,11 @@ public final class NameTagVisibleProperty implements NpcProperty<Boolean> {
     }
 
     @Override
+    public boolean clear(Living npc, @Nullable CommandSource src) throws PropertyException {
+        return set(npc, true, src);
+    }
+
+    @Override
     public Optional<Boolean> get(Living npc) {
         if (!npc.supports(CustomNameVisibleData.class))
             return Optional.empty();

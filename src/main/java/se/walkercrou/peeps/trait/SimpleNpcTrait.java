@@ -1,6 +1,10 @@
 package se.walkercrou.peeps.trait;
 
+import org.spongepowered.api.data.DataQuery;
+
 public final class SimpleNpcTrait implements NpcTrait {
+
+    private static final DataQuery QUERY_ID = DataQuery.of("Id");
 
     private final String id;
 

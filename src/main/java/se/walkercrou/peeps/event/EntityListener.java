@@ -8,7 +8,7 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.trait.NpcTrait;
 import se.walkercrou.peeps.trait.NpcTraits;
 

@@ -34,8 +34,7 @@ public final class NpcPropertyRegistryModule implements CatalogRegistryModule<Np
     public void registerDefaults() {
         this.propertyMappings.put("displayName", DISPLAY_NAME);
         this.propertyMappings.put("skin", SKIN);
-        this.propertyMappings.put("sightFront", FRONT_SIGHT_RANGE);
-        this.propertyMappings.put("sightBack", BACK_SIGHT_RANGE);
+        this.propertyMappings.put("sight", SIGHT_RANGE);
         this.propertyMappings.put("location", LOCATION);
         this.propertyMappings.put("riding", RIDING);
         this.propertyMappings.put("rotation", ROTATION);

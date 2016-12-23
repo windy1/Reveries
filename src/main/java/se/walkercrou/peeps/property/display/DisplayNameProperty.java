@@ -7,8 +7,9 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.property.NpcProperty;
+import se.walkercrou.peeps.property.PropertyException;
 
 import java.util.Optional;
 
@@ -29,6 +30,11 @@ public final class DisplayNameProperty implements NpcProperty<String> {
             && (!npc.supports(DisplayNameData.class)
                 || npc.offer(npc.getOrCreate(DisplayNameData.class).get()
                     .set(Keys.DISPLAY_NAME, displayName)).isSuccessful());
+    }
+
+    @Override
+    public boolean clear(Living npc, @Nullable CommandSource src) throws PropertyException {
+        return set(npc, "", src);
     }
 
     @Override

@@ -24,13 +24,9 @@ public final class NpcKeys {
     public static final Key<Value<Text>> DISPLAY_NAME = makeSingleKey(new TypeToken<Text>() {},
         new TypeToken<Value<Text>>() {}, DataQuery.of("DisplayName"), "peeps:display_name", "Display Name");
 
-    public static final Key<Value<Double>> FRONT_SIGHT_RANGE = makeSingleKey(TypeToken.of(Double.class),
-        new TypeToken<Value<Double>>() {}, DataQuery.of("FrontSightRange"), "peeps:front_sight_range",
-        "Front Sight Radius");
-
-    public static final Key<Value<Double>> BACK_SIGHT_RANGE = makeSingleKey(TypeToken.of(Double.class),
-        new TypeToken<Value<Double>>() {}, DataQuery.of("BackSightRange"), "peeps:back_sight_range",
-        "Back Sight Range");
+    public static final Key<Value<Double>> SIGHT_RANGE = makeSingleKey(TypeToken.of(Double.class),
+        new TypeToken<Value<Double>>() {}, DataQuery.of("SightRange"), "peeps:sight_range",
+        "Sight Range");
 
     private NpcKeys() {}
 

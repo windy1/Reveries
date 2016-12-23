@@ -3,6 +3,7 @@ package se.walkercrou.peeps;
 import static org.spongepowered.api.text.Text.NEW_LINE;
 import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
+import static org.spongepowered.api.text.action.TextActions.insertText;
 import static org.spongepowered.api.text.action.TextActions.runCommand;
 import static org.spongepowered.api.text.action.TextActions.suggestCommand;
 import static org.spongepowered.api.text.format.TextColors.BLUE;
@@ -20,7 +21,7 @@ import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextElement;
 import org.spongepowered.api.text.TextTemplate;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.property.NpcProperty;
 import se.walkercrou.peeps.trait.NpcTrait;
 
@@ -63,6 +64,8 @@ public final class Messages {
 
     public static final TextTemplate UPDATED_PROPS = of(GREEN, "Updated ", arg("amount"), " properties.");
 
+    public static final TextTemplate CLEARED_PROPS = of(GREEN, "Cleared ", arg("amount"), " properties.");
+
     public static final Text SKIN_NOT_FOUND = Text.of(RED, "Skin not found.");
 
     public static final Text SKIN_LOOKUP = Text.of(GREEN, "Looking up skin...");
@@ -80,9 +83,9 @@ public final class Messages {
 
     public static PaginationList getNpcInfo(Living npc, NpcData npcData) {
         Map<String, TextElement> info = Maps.newHashMap();
-        info.put("npc.owner", Text.of(npcData.ownerId().get()));
+        info.put("npc.owner", selfInsertingText(Text.of(npcData.ownerId().get())));
         info.put("npc.entity.type", Text.of(npc.getType().getId()));
-        info.put("npc.entity.uuid", Text.of(npc.getUniqueId()));
+        info.put("npc.entity.uuid", selfInsertingText(Text.of(npc.getUniqueId())));
 
         GameRegistry reg = Sponge.getRegistry();
         UUID npcId = npc.getUniqueId();
@@ -124,6 +127,10 @@ public final class Messages {
             .title(Text.builder("NPC").color(GRAY).build())
             .contents(NPC_INFO.apply(info).build())
             .build();
+    }
+
+    public static Text selfInsertingText(Text text) {
+        return text.toBuilder().onShiftClick(insertText(text.toPlain())).build();
     }
 
 }

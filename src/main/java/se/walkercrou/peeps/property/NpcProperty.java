@@ -16,6 +16,8 @@ public interface NpcProperty<T> extends CatalogType {
 
     boolean set(Living npc, T value, @Nullable CommandSource src) throws PropertyException;
 
+    boolean clear(Living npc, @Nullable CommandSource src) throws PropertyException;
+
     Optional<T> get(Living npc);
 
 }

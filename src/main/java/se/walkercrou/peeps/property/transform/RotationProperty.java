@@ -4,6 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.Living;
 import se.walkercrou.peeps.property.NpcProperty;
+import se.walkercrou.peeps.property.PropertyException;
 
 import java.util.Optional;
 
@@ -21,6 +22,11 @@ public final class RotationProperty implements NpcProperty<Vector3d> {
         npc.setRotation(value);
         npc.setHeadRotation(value);
         return true;
+    }
+
+    @Override
+    public boolean clear(Living npc, @Nullable CommandSource src) throws PropertyException {
+        return set(npc, Vector3d.ZERO, src);
     }
 
     @Override

@@ -1,10 +1,9 @@
-package se.walkercrou.peeps.data.immutable;
+package se.walkercrou.peeps.data.npc;
 
 import org.spongepowered.api.data.manipulator.ImmutableDataManipulator;
 import org.spongepowered.api.data.value.immutable.ImmutableSetValue;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.mutable.NpcData;
 import se.walkercrou.peeps.trait.NpcTrait;
 
 import java.util.UUID;
@@ -14,6 +13,8 @@ public interface ImmutableNpcData extends ImmutableDataManipulator<ImmutableNpcD
     ImmutableValue<UUID> ownerId();
 
     ImmutableValue<Text> displayName();
+
+    ImmutableValue<Double> sightRange();
 
     ImmutableSetValue<NpcTrait> traits();
 

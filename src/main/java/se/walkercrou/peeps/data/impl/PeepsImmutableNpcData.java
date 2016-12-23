@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl.immutable;
+package se.walkercrou.peeps.data.impl;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
@@ -7,12 +7,10 @@ import org.spongepowered.api.data.value.immutable.ImmutableSetValue;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.text.Text;
 import se.walkercrou.peeps.data.NpcKeys;
-import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
-import se.walkercrou.peeps.data.impl.mutable.PeepsNpcData;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.npc.ImmutableNpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.trait.NpcTrait;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,11 +18,13 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
 
     private final UUID ownerId;
     private final Text displayName;
+    private final double sightRange;
     private final Set<NpcTrait> traits;
 
-    public PeepsImmutableNpcData(UUID ownerId, Text displayName, Set<NpcTrait> traits) {
+    public PeepsImmutableNpcData(UUID ownerId, Text displayName, double sightRange, Set<NpcTrait> traits) {
         this.ownerId = ownerId;
         this.displayName = displayName;
+        this.sightRange = sightRange;
         this.traits = traits;
         registerGetters();
     }
@@ -40,6 +40,11 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
     }
 
     @Override
+    public ImmutableValue<Double> sightRange() {
+        return Sponge.getRegistry().getValueFactory().createValue(NpcKeys.SIGHT_RANGE, this.sightRange).asImmutable();
+    }
+
+    @Override
     public ImmutableSetValue<NpcTrait> traits() {
         return Sponge.getRegistry().getValueFactory().createSetValue(NpcKeys.TRAITS, this.traits).asImmutable();
     }
@@ -49,8 +54,11 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
         registerFieldGetter(NpcKeys.OWNER_ID, () -> this.ownerId);
         registerKeyValue(NpcKeys.OWNER_ID, this::ownerId);
 
-        registerFieldGetter(NpcKeys.DISPLAY_NAME, () -> Optional.ofNullable(this.displayName));
+        registerFieldGetter(NpcKeys.DISPLAY_NAME, () -> this.displayName);
         registerKeyValue(NpcKeys.DISPLAY_NAME, this::displayName);
+
+        registerFieldGetter(NpcKeys.SIGHT_RANGE, () -> this.sightRange);
+        registerKeyValue(NpcKeys.SIGHT_RANGE, this::sightRange);
 
         registerFieldGetter(NpcKeys.TRAITS, () -> this.traits);
         registerKeyValue(NpcKeys.TRAITS, this::traits);
@@ -58,7 +66,7 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
 
     @Override
     public PeepsNpcData asMutable() {
-        return new PeepsNpcData(this.ownerId, this.displayName, this.traits);
+        return new PeepsNpcData(this.ownerId, this.displayName, this.sightRange, this.traits);
     }
 
     @Override
@@ -71,6 +79,7 @@ public final class PeepsImmutableNpcData extends AbstractImmutableData<Immutable
         return super.toContainer()
             .set(NpcKeys.OWNER_ID, this.ownerId)
             .set(NpcKeys.DISPLAY_NAME, this.displayName)
+            .set(NpcKeys.SIGHT_RANGE, this.sightRange)
             .set(NpcKeys.TRAITS, this.traits);
     }
 

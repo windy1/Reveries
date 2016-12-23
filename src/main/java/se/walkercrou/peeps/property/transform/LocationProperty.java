@@ -5,8 +5,11 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.property.NpcProperty;
+import se.walkercrou.peeps.property.PropertyException;
 
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public final class LocationProperty implements NpcProperty<Location<World>> {
 
@@ -18,6 +21,11 @@ public final class LocationProperty implements NpcProperty<Location<World>> {
     @Override
     public boolean set(Living npc, Location<World> value, CommandSource src) {
         return npc.setLocation(value);
+    }
+
+    @Override
+    public boolean clear(Living npc, @Nullable CommandSource src) throws PropertyException {
+        return false;
     }
 
     @Override

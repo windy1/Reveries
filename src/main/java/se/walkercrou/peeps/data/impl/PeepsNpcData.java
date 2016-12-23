@@ -1,4 +1,4 @@
-package se.walkercrou.peeps.data.impl.mutable;
+package se.walkercrou.peeps.data.impl;
 
 import com.google.common.collect.Sets;
 import org.spongepowered.api.Sponge;
@@ -9,9 +9,8 @@ import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.value.mutable.SetValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.text.Text;
-import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
-import se.walkercrou.peeps.data.impl.immutable.PeepsImmutableNpcData;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.npc.ImmutableNpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.data.NpcKeys;
 import se.walkercrou.peeps.trait.NpcTrait;
 
@@ -25,17 +24,19 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
 
     private UUID ownerId;
     private Text displayName;
+    private double sightRange;
     private Set<NpcTrait> traits;
 
-    public PeepsNpcData(UUID ownerId, Text displayName, Set<NpcTrait> traits) {
+    public PeepsNpcData(UUID ownerId, Text displayName, double sightRange, Set<NpcTrait> traits) {
         this.ownerId = ownerId;
         this.displayName = displayName;
+        this.sightRange = sightRange;
         this.traits = traits;
         registerGettersAndSetters();
     }
 
     public PeepsNpcData() {
-        this(null, null, Sets.newHashSet());
+        this(null, null, 0, Sets.newHashSet());
     }
 
     @Override
@@ -49,6 +50,11 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
     }
 
     @Override
+    public Value<Double> sightRange() {
+        return Sponge.getRegistry().getValueFactory().createValue(NpcKeys.SIGHT_RANGE, this.sightRange);
+    }
+
+    @Override
     public SetValue<NpcTrait> traits() {
         return Sponge.getRegistry().getValueFactory().createSetValue(NpcKeys.TRAITS, this.traits);
     }
@@ -59,9 +65,13 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
         registerFieldSetter(NpcKeys.OWNER_ID, value -> this.ownerId = value);
         registerKeyValue(NpcKeys.OWNER_ID, this::ownerId);
 
-        registerFieldGetter(NpcKeys.DISPLAY_NAME, () -> Optional.ofNullable(this.displayName));
+        registerFieldGetter(NpcKeys.DISPLAY_NAME, () -> this.displayName);
         registerFieldSetter(NpcKeys.DISPLAY_NAME, value -> this.displayName = value);
         registerKeyValue(NpcKeys.DISPLAY_NAME, this::displayName);
+
+        registerFieldGetter(NpcKeys.SIGHT_RANGE, () -> this.sightRange);
+        registerFieldSetter(NpcKeys.SIGHT_RANGE, value -> this.sightRange = value);
+        registerKeyValue(NpcKeys.SIGHT_RANGE, this::sightRange);
 
         registerFieldGetter(NpcKeys.TRAITS, () -> this.traits);
         registerFieldSetter(NpcKeys.TRAITS, value -> this.traits = value);
@@ -79,18 +89,19 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
             return Optional.empty();
         this.ownerId = container.getObject(NpcKeys.OWNER_ID.getQuery(), UUID.class).get();
         this.displayName = container.getObject(NpcKeys.DISPLAY_NAME.getQuery(), Text.class).get();
+        this.sightRange = container.getDouble(NpcKeys.SIGHT_RANGE.getQuery()).get();
         this.traits = Sets.newHashSet(container.getObjectList(NpcKeys.TRAITS.getQuery(), NpcTrait.class).get());
         return Optional.of(this);
     }
 
     @Override
     public PeepsNpcData copy() {
-        return new PeepsNpcData(this.ownerId, this.displayName, this.traits);
+        return new PeepsNpcData(this.ownerId, this.displayName, this.sightRange, this.traits);
     }
 
     @Override
     public PeepsImmutableNpcData asImmutable() {
-        return new PeepsImmutableNpcData(this.ownerId, this.displayName, this.traits);
+        return new PeepsImmutableNpcData(this.ownerId, this.displayName, this.sightRange, this.traits);
     }
 
     @Override
@@ -103,6 +114,7 @@ public final class PeepsNpcData extends AbstractData<NpcData, ImmutableNpcData> 
         return super.toContainer()
             .set(NpcKeys.OWNER_ID, this.ownerId)
             .set(NpcKeys.DISPLAY_NAME, this.displayName)
+            .set(NpcKeys.SIGHT_RANGE, this.sightRange)
             .set(NpcKeys.TRAITS, this.traits);
     }
 

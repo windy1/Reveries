@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 import org.spongepowered.api.entity.Entity;
@@ -30,13 +29,10 @@ import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.cmd.CommandRegistrar;
-import se.walkercrou.peeps.data.immutable.ImmutableNpcData;
-import se.walkercrou.peeps.data.immutable.ImmutableSightData;
-import se.walkercrou.peeps.data.impl.builder.NpcDataManipulatorBuilder;
-import se.walkercrou.peeps.data.impl.builder.SightDataManipulatorBuilder;
-import se.walkercrou.peeps.data.impl.mutable.PeepsNpcData;
-import se.walkercrou.peeps.data.impl.mutable.PeepsSightData;
-import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.data.impl.NpcDataManipulatorBuilder;
+import se.walkercrou.peeps.data.impl.PeepsNpcData;
+import se.walkercrou.peeps.data.npc.ImmutableNpcData;
+import se.walkercrou.peeps.data.npc.NpcData;
 import se.walkercrou.peeps.event.EntityListener;
 import se.walkercrou.peeps.event.NpcListener;
 import se.walkercrou.peeps.property.NpcProperty;
@@ -74,9 +70,8 @@ public final class Peeps {
         reg.registerModule(NpcTrait.class, new NpcTraitRegistryModule());
         reg.registerModule(NpcProperty.class, new NpcPropertyRegistryModule());
 
-        DataManager data = this.game.getDataManager();
-        data.register(PeepsNpcData.class, ImmutableNpcData.class, new NpcDataManipulatorBuilder());
-        data.register(PeepsSightData.class, ImmutableSightData.class, new SightDataManipulatorBuilder());
+        this.game.getDataManager().register(
+            PeepsNpcData.class, ImmutableNpcData.class, new NpcDataManipulatorBuilder());
     }
 
     @Listener
@@ -134,7 +129,7 @@ public final class Peeps {
             throw new NpcSpawnException("could not spawn NPC");
 
         Text displayName = Messages.DEFAULT_DISPLAY_NAME;
-        entity.offer(new PeepsNpcData(owner.get().getUniqueId(), displayName, Sets.newHashSet()));
+        entity.offer(new PeepsNpcData(owner.get().getUniqueId(), displayName, 0, Sets.newHashSet()));
         if (entity.supports(DisplayNameData.class))
             entity.offer(entity.getOrCreate(DisplayNameData.class).get().set(Keys.DISPLAY_NAME, displayName));
 

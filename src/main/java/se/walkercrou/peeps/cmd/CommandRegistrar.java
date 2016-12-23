@@ -18,6 +18,9 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.text.Text;
 import se.walkercrou.peeps.Peeps;
+import se.walkercrou.peeps.cmd.exe.GeneralCommandExecutors;
+import se.walkercrou.peeps.cmd.exe.PropertyCommandExecutors;
+import se.walkercrou.peeps.cmd.exe.TraitCommandExecutors;
 import se.walkercrou.peeps.trait.NpcTrait;
 
 public final class CommandRegistrar {
@@ -30,10 +33,11 @@ public final class CommandRegistrar {
     }
 
     public void register() {
-        CommandExecutors executors = new CommandExecutors(this.plugin);
+        GeneralCommandExecutors general = new GeneralCommandExecutors(this.plugin);
+        TraitCommandExecutors traits = new TraitCommandExecutors(this.plugin);
 
         CommandSpec create = CommandSpec.builder()
-            .executor(executors::createNpc)
+            .executor(general::createNpc)
             .arguments(
                 optional(onlyOne(catalogedElement(Text.of("entityType"), EntityType.class))),
                 optional(onlyOne(location(Text.of("location")))),
@@ -41,7 +45,7 @@ public final class CommandRegistrar {
             .build();
 
         CommandSpec getInfo = CommandSpec.builder()
-            .executor(executors::getNpcInfo)
+            .executor(general::getNpcInfo)
             .arguments(optional(onlyOne(entity(Text.of("npc")))))
             .build();
 
@@ -50,38 +54,53 @@ public final class CommandRegistrar {
             traitFlags.valueFlag(bool(Text.of(trait.getId())), "-" + trait.getId());
 
         CommandSpec trait = CommandSpec.builder()
-            .executor(executors::updateTraits)
+            .executor(traits::updateTraits)
             .arguments(traitFlags.buildWith(optional(onlyOne(entity(Text.of("npc"))))))
             .build();
 
-        CommandSpec prop = CommandSpec.builder()
-            .executor(executors::updateProperties)
+        PropertyCommandExecutors props = new PropertyCommandExecutors(this.plugin);
+        CommandSpec setProps = CommandSpec.builder()
+            .executor(props::updateProperties)
             .arguments(flags()
                 .valueFlag(string(Text.of("skin")), "-skin")
                 .valueFlag(remainingJoinedStrings(Text.of("displayName")), "-displayName")
                 .valueFlag(vector3d(Text.of("rotation")), "-rotation")
                 .valueFlag(location(Text.of("location")), "-location")
                 .valueFlag(entity(Text.of("riding")), "-riding")
-                .valueFlag(doubleNum(Text.of("sightFront")), "-sightFront")
-                .valueFlag(doubleNum(Text.of("sightBack")), "-sightBack")
+                .valueFlag(doubleNum(Text.of("sight")), "-sight")
                 .valueFlag(bool(Text.of("nameTag")), "-nameTag")
                 .buildWith(optional(onlyOne(entity(Text.of("npc"))))))
             .build();
 
+        CommandSpec clearProps = CommandSpec.builder()
+            .executor(props::clearProperties)
+            .arguments(flags()
+                .flag("-skin")
+                .flag("-displayName")
+                .flag("-rotation")
+                .flag("-location")
+                .flag("-riding")
+                .flag("-sight")
+                .flag("-nameTag")
+                .buildWith(optional(onlyOne(entity(Text.of("npc"))))))
+            .build();
+
+        CommandSpec entityId = CommandSpec.builder().executor(general::getTargetedEntityId).build();
+
         CommandSpec root = CommandSpec.builder()
-            .executor(executors::showVersion)
+            .executor(general::showVersion)
             .child(create, "create", "new", "mk", "spawn")
             .child(getInfo, "getinfo", "info", "information", "data")
             .child(trait, "trait")
-            .child(prop, "property", "prop")
+            .child(setProps, "prop", "propset")
+            .child(clearProps, "propclear")
+            .child(entityId, "entityid", "eid", "getid")
             .build();
 
         this.rootMapping = this.plugin.game.getCommandManager()
             .register(this.plugin, root, "npc", "peeps")
             .orElse(null);
     }
-
-
 
     public void deregister() {
         if (this.rootMapping != null)
