@@ -10,6 +10,8 @@ import se.walkercrou.peeps.data.NpcKeys;
 import se.walkercrou.peeps.data.mutable.NpcData;
 import se.walkercrou.peeps.property.NpcProperty;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 public final class DisplayNameProperty implements NpcProperty<String> {
@@ -27,6 +29,11 @@ public final class DisplayNameProperty implements NpcProperty<String> {
             && (!npc.supports(DisplayNameData.class)
                 || npc.offer(npc.getOrCreate(DisplayNameData.class).get()
                     .set(Keys.DISPLAY_NAME, displayName)).isSuccessful());
+    }
+
+    @Override
+    public Optional<String> get(Living npc) {
+        return Optional.of(TextSerializers.FORMATTING_CODE.serialize(npc.get(NpcData.class).get().displayName().get()));
     }
 
     @Override

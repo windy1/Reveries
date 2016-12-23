@@ -31,6 +31,11 @@ public final class BackSightRangeProperty implements NpcProperty<Double> {
     }
 
     @Override
+    public Optional<Double> get(Living npc) {
+        return npc.get(SightData.class).map(sd -> sd.backSightRange().get());
+    }
+
+    @Override
     public String getId() {
         return "sightBack";
     }

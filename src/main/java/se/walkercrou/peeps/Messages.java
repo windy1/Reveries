@@ -3,19 +3,33 @@ package se.walkercrou.peeps;
 import static org.spongepowered.api.text.Text.NEW_LINE;
 import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
+import static org.spongepowered.api.text.action.TextActions.runCommand;
+import static org.spongepowered.api.text.action.TextActions.suggestCommand;
 import static org.spongepowered.api.text.format.TextColors.BLUE;
 import static org.spongepowered.api.text.format.TextColors.GRAY;
 import static org.spongepowered.api.text.format.TextColors.GREEN;
 import static org.spongepowered.api.text.format.TextColors.RED;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.Living;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextElement;
 import org.spongepowered.api.text.TextTemplate;
 import se.walkercrou.peeps.data.mutable.NpcData;
+import se.walkercrou.peeps.property.NpcProperty;
+import se.walkercrou.peeps.trait.NpcTrait;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public final class Messages {
 
@@ -32,7 +46,8 @@ public final class Messages {
         "Owner            ",    arg("npc.owner").color(GRAY),           NEW_LINE,
         "Entity Type      ",    arg("npc.entity.type").color(GRAY),     NEW_LINE,
         "Unique ID        ",    arg("npc.entity.uuid").color(GRAY),     NEW_LINE,
-        "Display Name    ",     arg("npc.displayName").color(GRAY));
+        "Traits", NEW_LINE,     arg("npc.traits"),                      NEW_LINE,
+        "Properties", NEW_LINE, arg("npc.properties"));
 
     public static final Text DEFAULT_DISPLAY_NAME = Text.of("Unnamed NPC");
 
@@ -63,13 +78,52 @@ public final class Messages {
 
     private Messages() {}
 
-    public static Text getNpcInfo(Living npc, NpcData npcData) {
+    public static PaginationList getNpcInfo(Living npc, NpcData npcData) {
         Map<String, TextElement> info = Maps.newHashMap();
         info.put("npc.owner", Text.of(npcData.ownerId().get()));
         info.put("npc.entity.type", Text.of(npc.getType().getId()));
         info.put("npc.entity.uuid", Text.of(npc.getUniqueId()));
-        info.put("npc.displayName", npcData.displayName().get());
-        return NPC_INFO.apply(info).build();
+
+        GameRegistry reg = Sponge.getRegistry();
+        UUID npcId = npc.getUniqueId();
+
+        Text.Builder traitsBuilder = Text.builder();
+        Set<NpcTrait> npcTraits = npcData.traits().get();
+        List<NpcTrait> allTraits = Lists.newArrayList(reg.getAllOf(NpcTrait.class));
+        allTraits.sort(Comparator.comparing(CatalogType::getId));
+        for (int i = 0; i < allTraits.size(); i++) {
+            NpcTrait trait = allTraits.get(i);
+            boolean enabled = npcTraits.contains(trait);
+            traitsBuilder.append(Text.builder()
+                .append(Text.of("  ", enabled ? GREEN : RED, trait.getId()))
+                .onClick(runCommand("/npc trait " + npcId + " --" + trait.getId() + "=" + !enabled))
+                .build());
+            if (i < allTraits.size() - 1)
+                traitsBuilder.append(NEW_LINE);
+        }
+        info.put("npc.traits", traitsBuilder);
+
+        Text.Builder propsBuilder = Text.builder();
+        List<NpcProperty> props = Lists.newArrayList(reg.getAllOf(NpcProperty.class));
+        props.sort(Comparator.comparing(CatalogType::getId));
+        for (int i = 0; i < props.size(); i++) {
+            NpcProperty prop = props.get(i);
+            Optional<?> value = prop.get(npc);
+            propsBuilder.append(Text.builder()
+                .append(Text.of(
+                    "  ", GREEN, prop.getId(), GRAY, "=",
+                    value.map(v -> Text.of(GREEN, v)).orElse(Text.of(RED, "None"))))
+                .onClick(suggestCommand("/npc prop " + npcId + " --" + prop.getId() + "="))
+                .build());
+            if (i < props.size() - 1)
+                propsBuilder.append(NEW_LINE);
+        }
+        info.put("npc.properties", propsBuilder);
+
+        return PaginationList.builder()
+            .title(Text.builder("NPC").color(GRAY).build())
+            .contents(NPC_INFO.apply(info).build())
+            .build();
     }
 
 }

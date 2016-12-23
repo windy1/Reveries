@@ -20,7 +20,6 @@ public final class FrontSightRangeProperty implements NpcProperty<Double> {
 
     @Override
     public boolean set(Living npc, Double value, CommandSource src) throws PropertyException {
-        System.out.println("value = " + value);
         Optional<SightData> data = npc.get(SightData.class);
         boolean result = data.map(sd -> npc.offer(sd.set(NpcKeys.FRONT_SIGHT_RANGE, value)).isSuccessful())
             .orElseGet(() -> npc.offer(new PeepsSightData(value, 0)).isSuccessful());
@@ -28,6 +27,11 @@ public final class FrontSightRangeProperty implements NpcProperty<Double> {
         if (result && !plugin.isMonitoring(npc))
             plugin.monitor(npc);
         return result;
+    }
+
+    @Override
+    public Optional<Double> get(Living npc) {
+        return npc.get(SightData.class).map(sd -> sd.frontSightRange().get());
     }
 
     @Override

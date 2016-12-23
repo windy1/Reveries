@@ -5,6 +5,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.Living;
 import se.walkercrou.peeps.property.NpcProperty;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 public final class RotationProperty implements NpcProperty<Vector3d> {
@@ -19,6 +21,11 @@ public final class RotationProperty implements NpcProperty<Vector3d> {
         npc.setRotation(value);
         npc.setHeadRotation(value);
         return true;
+    }
+
+    @Override
+    public Optional<Vector3d> get(Living npc) {
+        return Optional.of(npc.getRotation());
     }
 
     @Override

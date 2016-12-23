@@ -6,6 +6,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import se.walkercrou.peeps.property.NpcProperty;
 
+import java.util.Optional;
+
 public final class LocationProperty implements NpcProperty<Location<World>> {
 
     @Override
@@ -16,6 +18,11 @@ public final class LocationProperty implements NpcProperty<Location<World>> {
     @Override
     public boolean set(Living npc, Location<World> value, CommandSource src) {
         return npc.setLocation(value);
+    }
+
+    @Override
+    public Optional<Location<World>> get(Living npc) {
+        return Optional.of(npc.getLocation());
     }
 
     @Override

@@ -65,7 +65,7 @@ public final class CommandExecutors {
             Living npc = this.plugin.createAndSpawn(entityType, location, Cause.source(this.plugin).owner(src).build());
             NpcData npcData = npc.get(NpcData.class).get();
             src.sendMessage(SPAWN_SUCCESS);
-            src.sendMessage(Messages.getNpcInfo(npc, npcData));
+            Messages.getNpcInfo(npc, npcData).sendTo(src);
             return CommandResult.success();
         } catch (NpcSpawnException e) {
             throw new CommandException(SPAWN_FAILED);
@@ -75,7 +75,7 @@ public final class CommandExecutors {
     public CommandResult getNpcInfo(CommandSource src, CommandContext context) throws CommandException {
         Living npc = getTargetedNpc(src, context.getOne("npc"));
         NpcData data = npc.get(NpcData.class).orElseThrow(() -> new CommandException(NOT_AN_NPC));
-        src.sendMessage(Messages.getNpcInfo(npc, data));
+        Messages.getNpcInfo(npc, data).sendTo(src);
         return CommandResult.success();
     }
 

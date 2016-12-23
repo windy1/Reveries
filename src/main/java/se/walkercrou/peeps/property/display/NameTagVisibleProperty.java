@@ -7,6 +7,8 @@ import org.spongepowered.api.entity.living.Living;
 import se.walkercrou.peeps.property.NpcProperty;
 import se.walkercrou.peeps.property.PropertyException;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 public final class NameTagVisibleProperty implements NpcProperty<Boolean> {
@@ -19,8 +21,15 @@ public final class NameTagVisibleProperty implements NpcProperty<Boolean> {
     @Override
     public boolean set(Living npc, Boolean value, @Nullable CommandSource src) throws PropertyException {
         return npc.supports(CustomNameVisibleData.class)
-            && npc.offer(npc.get(CustomNameVisibleData.class).get()
+            && npc.offer(npc.getOrCreate(CustomNameVisibleData.class).get()
                 .set(Keys.CUSTOM_NAME_VISIBLE, value)).isSuccessful();
+    }
+
+    @Override
+    public Optional<Boolean> get(Living npc) {
+        if (!npc.supports(CustomNameVisibleData.class))
+            return Optional.empty();
+        return Optional.of(npc.getOrCreate(CustomNameVisibleData.class).get().customNameVisible().get());
     }
 
     @Override

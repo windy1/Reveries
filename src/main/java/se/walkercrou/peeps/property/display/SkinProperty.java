@@ -11,6 +11,7 @@ import se.walkercrou.peeps.Messages;
 import se.walkercrou.peeps.property.NpcProperty;
 import se.walkercrou.peeps.property.PropertyException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public final class SkinProperty implements NpcProperty<String> {
@@ -47,6 +48,13 @@ public final class SkinProperty implements NpcProperty<String> {
 
             return false;
         }
+    }
+
+    @Override
+    public Optional<String> get(Living npc) {
+        if (!npc.supports(SkinData.class))
+            return Optional.empty();
+        return Optional.of(npc.getOrCreate(SkinData.class).get().skinUniqueId().get().toString());
     }
 
     @Override
