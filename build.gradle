@@ -7,9 +7,9 @@ version = '1.0.0'
 description = 'An NPC plugin.'
 
 sponge.plugin {
-    id = 'peeps'
+    id = 'reveries'
     meta {
-        name = "Peeps"
+        name = "Reveries"
     }
 }
 
